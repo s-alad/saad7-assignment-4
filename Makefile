@@ -13,9 +13,9 @@ run:
 	# Start backend server in the background
 	cd backend && \
 	. venv/bin/activate && \
-	nohup python app.py > backend.log 2>&1 &
+	python app.py &
 	# Start frontend server in the background
 	cd frontend && \
-	npm run dev > frontend.log 2>&1 &
+	npm run dev &
 	# Wait for servers to start
 	sleep 10
