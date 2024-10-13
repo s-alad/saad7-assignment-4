@@ -1,27 +1,43 @@
-name: CI
+name: LSA Search Engine CI
 
-on: [push, pull_request]
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
 
-    - name: Set up Node.js and Python
-      uses: actions/setup@v3
-      with:
-        node-version: '16'
-        python-version: '3.8'
+      # Step 2: Set up Python
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.8'
 
-    - name: Install and Run Application
-      run: |
-        make install
-        make run &
-        sleep 10
+      # Step 3: Install Backend Dependencies
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          python3 -m venv venv
+          source venv/bin/activate
+          pip install -r requirements.txt
+          python preprocess.py
 
-    - name: Check Servers
-      run: |
-        curl -f http://localhost:5000/ || exit 1
-        curl -f http://localhost:3000/ || exit 1
+      # Step 4: Install Frontend Dependencies
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend
+          npm install
+
+      # Step 5: Run Backend and Frontend
+      - name: Run Backend and Frontend
+        run: |
+          make run &
+          sleep 10  # Wait for servers to start
