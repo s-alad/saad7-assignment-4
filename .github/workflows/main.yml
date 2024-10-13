@@ -1,0 +1,27 @@
+name: CI
+
+on: [push, pull_request]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Node.js and Python
+      uses: actions/setup@v3
+      with:
+        node-version: '16'
+        python-version: '3.8'
+
+    - name: Install and Run Application
+      run: |
+        make install
+        make run &
+        sleep 10
+
+    - name: Check Servers
+      run: |
+        curl -f http://localhost:5000/ || exit 1
+        curl -f http://localhost:3000/ || exit 1
